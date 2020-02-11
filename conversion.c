@@ -33,19 +33,19 @@ int main() {
 
 
 	// Grayscale conversion
-	RGBToGray2( imageRGB, imageGray, info.width, info.height );
+	// RGBToGray2( imageRGB, imageGray, info.width, info.height );
 
 	// imageBrightness(imageRGB, imageGray, info.width, info.height );
 	// umbralGlobal(imageRGB, info.width, info.height );
 	
-	umbralDinamico(imageGray, info.width, info.height );
-	GrayToRGB2( imageRGB, imageGray, info.width, info.height );
+	// umbralDinamico(imageGray, info.width, info.height );
+	// GrayToRGB2( imageRGB, imageGray, info.width, info.height );
 
 	newL( imageRGB, blur, info.width, info.height );
 
 
-	guardarBMP( "huella3.bmp", &info, imageRGB );
-	guardarBMP( "blur.bmp", &info, blur );
+	// guardarBMP( "huella3.bmp", &info, imageRGB );
+	guardarBMP( "blur.bmp", &info, imageGray );
 	
 	// guardarBMP( "color.bmp", &info, imageRGB );
 
@@ -203,7 +203,7 @@ void umbralDinamico( unsigned char * imageGray, uint32_t width, uint32_t height 
 
 
 
-void newL( unsigned char * imageGray, unsigned char * xn, uint32_t width, uint32_t height ) {
+void newL( unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32_t height ) {
 	
 	register int x, y, xb, yb;
 	int bloque = 3, indice;
@@ -218,40 +218,100 @@ void newL( unsigned char * imageGray, unsigned char * xn, uint32_t width, uint32
 	// int xn[] = {15, 30, 66, 101, 2, 71, 41, 20, 6, 7, 8, 10, 8, 25, 31, 47}; 
 	// int width  = 4;
 	// int height = 4; 
-	int yn[height*width];
+	// int yn[height*width];
+	// for( register i  = 0; i < height*width; i++ )
+	// 	yn[ i ] = 0;
  
+	int zeros = 0, mayores = 0;
 
-
-	for ( y = 0; y < (height/bloque)+1; y++ ) 
-		for ( x = 0; x < (width/bloque)+1; x++ ) {
-			// media = 0;
+	for ( y = 0; y < (height-bloque)+1; y++ ) {
+		for ( x = 0; x < (width-bloque)+1; x++ ) {
 			int sum 	 = 0;
+			int center   = 0;
 			int subIndex = 0;
 			for ( yb = 0; yb < bloque; yb++ ) {
 				for ( xb = 0; xb < bloque; xb++ ) {
 					indice   =  ((y+yb) * width) + (x+xb);
 					subIndex =  yb*bloque + xb;
 					sum     +=  hn[ subIndex ] * xn[ indice ];
+					// printf( "hn[%d] * xn[%d] = %d\n", subIndex, indice, sum );
+					// printf( "%d * %d = %d\n", hn[ subIndex ], xn[ indice ], sum );
+					if( subIndex == 4 )
+						center = indice;
 					// printf( "hn[ %d ] * xn[ %d ] = %d\n", subIndex, indice, sum );
 					// printf( "%d  * %d = %d\n", hn[subIndex], xn[indice], sum );
 				} // end for
 			} // end for
 
-			int xc = ((bloque/2)+1) + x;
-			int yc = ((bloque/2)+1) + (y*width);
-			int center = (yc + xc) + 1;
 			
 			sum /= totalHn;
-			yn[ center ] = sum;
+			imageGray[ center ] = sum;
+			// yn[ center ] = sum;
+			// printf( "Suma: %d\n", sum );
+			if( sum > 255 )
+				mayores++;
+			if( sum == 0 ) {
+				printf("%d -> %d \n", xn[center], center);
+				zeros++;
+			}
+
 
 		} // end for
 
-} // end umbralGlobal
+	} // end for
+		printf("zeros: %d, mayores a 255 %d \n", zeros, mayores);
+		// print_mat( xn, height*width, width );
+} // end newL
 
+
+// void gaussian_filter( int * dim, float desv ) {
+// 	unsigned char * kernelGauss;
+// 	int factor, dim = 5;
+// 	float des = 1;
+// 	kernelGauss = calcularKernelGauss( &factor, dim, des );
+// } // end gaussian_filter
+
+// unsigned char * calcularKernelGauss( int * factor, int dim, float desv ) {
+// 	unsigned char * kernelGauss;
+// 	float coef, norm = 0.0;
+// 	int index = 0;
+// 	kernelGauss = (unsigned char *) malloc( dim*dim*sizeof(unsigned char) );
+// 	if( kernelGauss == NULL ) {
+// 		perror("Error al asignar memoria al kernel Gaussiano");
+// 		exit( EXIT_FAILURE );
+// 	} // end if
+// 	*factor =  0;
+// 	int rango = dim >> 1;
+// 	/*
+// 		Caso 3 :
+// 		 0011 -> 0001
+// 		Caso 5:
+// 		 0101 -> 0010
+// 		Caso 7:
+// 		 0111 -> 0011
+// 	*/
+// 	for( int y = 0; y < dim; y++ )
+// 		for( int x = 0; x < dim; x++ ) {
+// 			coef = expf( -( (x-rango)*(x-rango) + (y-rango)*(y-rango) )/(2.0*desv*desv) );
+// 			if( !index )
+// 				norm = coef;
+// 			kernelGauss[ index ] = ( unsigned char )(coef/norm);
+// 			printf( "Coeficiente %d\n", kernelGauss[ index ]  );
+// 			*factor += kernelGauss[ index++ ];  
+// 		} // end for
+		
+// 	return kernelGauss;
+
+// } // end calcularKernelGauss
+ 
+// void gauss( int dim, int factores ) {
+// } // end gauss
 
 void print_mat( int * numbers, int limit, int every ) {
 	for ( register int i = 0; i < limit; i++) {
-		if( i % every == 0 )
-			printf("%d \n", numbers[i] );
+		printf( "%3d ", numbers[i] );
+		if( (i+1) % every == 0 )
+			printf(" \n" );
+		
 	} // end for
 } // end print_mat
