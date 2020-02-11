@@ -16,7 +16,7 @@ void umbralDinamico( unsigned char * imageGray, uint32_t width, uint32_t height 
 
 void print_mat( int * numbers, int limit, int every );
 
-void newL( unsigned char * imageGray, unsigned char * blur, uint32_t width, uint32_t height );
+void newL( /*unsigned char * imageGray, unsigned char * blur, uint32_t width, uint32_t height*/ );
 
 int main() {
 
@@ -203,7 +203,7 @@ void umbralDinamico( unsigned char * imageGray, uint32_t width, uint32_t height 
 
 
 
-void newL( unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32_t height ) {
+void newL( /*unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32_t height*/ ) {
 	
 	register int x, y, xb, yb;
 	int bloque = 3, indice;
@@ -215,12 +215,19 @@ void newL( unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32
 	for( register int x = 0; x < sizeof(hn)/sizeof(hn[0]); x++ )
 		totalHn += hn[x];
 
-	// int xn[] = {15, 30, 66, 101, 2, 71, 41, 20, 6, 7, 8, 10, 8, 25, 31, 47}; 
-	// int width  = 4;
-	// int height = 4; 
-	// int yn[height*width];
-	// for( register i  = 0; i < height*width; i++ )
-	// 	yn[ i ] = 0;
+	int xn[] = {15, 30, 66, 101, 8, 
+				2, 71, 41, 20, 43,
+				6, 7, 8, 10, 11,
+				8, 25, 31, 47, 44,
+				34, 19, 9, 15, 55}; 
+	int width  = 5;
+	int height = 5; 
+	print_mat( xn, width*height, 5 );
+	printf("\n");
+	print_mat( hn, 9, 3 );
+	int yn[height*width];
+	for( register i  = 0; i < height*width; i++ )
+		yn[ i ] = 0;
  
 	int zeros = 0, mayores = 0;
 
@@ -235,7 +242,7 @@ void newL( unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32
 					subIndex =  yb*bloque + xb;
 					sum     +=  hn[ subIndex ] * xn[ indice ];
 					// printf( "hn[%d] * xn[%d] = %d\n", subIndex, indice, sum );
-					// printf( "%d * %d = %d\n", hn[ subIndex ], xn[ indice ], sum );
+					printf( "%d * %d = %d\n", hn[ subIndex ], xn[ indice ], sum );
 					if( subIndex == 4 )
 						center = indice;
 					// printf( "hn[ %d ] * xn[ %d ] = %d\n", subIndex, indice, sum );
@@ -245,8 +252,8 @@ void newL( unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32
 
 			
 			sum /= totalHn;
-			imageGray[ center ] = sum;
-			// yn[ center ] = sum;
+			// imageGray[ center ] = sum;
+			yn[ center ] = sum;
 			// printf( "Suma: %d\n", sum );
 			if( sum > 255 )
 				mayores++;
@@ -259,8 +266,8 @@ void newL( unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32
 		} // end for
 
 	} // end for
-		printf("zeros: %d, mayores a 255 %d \n", zeros, mayores);
-		// print_mat( xn, height*width, width );
+	printf("zeros: %d, mayores a 255 %d \n", zeros, mayores);
+	print_mat( yn, height*width, width );
 } // end newL
 
 
