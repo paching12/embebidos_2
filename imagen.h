@@ -33,4 +33,31 @@ unsigned char *abrirBMP(char *filename, bmpInfoHeader *bInfoHeader);
 void guardarBMP(char *filename, bmpInfoHeader *info, unsigned char *imgdata);
 void displayInfo(bmpInfoHeader *info);
 
+/* Filtros */
+
+void RGBToGray( unsigned char * imageRGB, unsigned char * imageGray, uint32_t width, uint32_t height );
+void GrayToRGB( unsigned char * imageRGB, unsigned char * imageGray, uint32_t width, uint32_t height );
+
+// More efficient
+void GrayToRGB2( unsigned char * imageRGB, unsigned char * imageGray, uint32_t width, uint32_t height );
+void RGBToGray2( unsigned char * imageRGB, unsigned char * imageGray, uint32_t width, uint32_t height );
+
+// Brightness
+void imageBrightness( unsigned char * imageRGB, unsigned char * imageGray, uint32_t width, uint32_t height );
+
+// Filtro Gaussiano
+void gaussian_filter( unsigned char * imageGray, unsigned char * blur, uint32_t width, uint32_t height );
+void umbralGlobal( unsigned char * imageGray, uint32_t width, uint32_t height );
+void umbralDinamico( unsigned char * imageGray, uint32_t width, uint32_t height );
+
+// Kernel Gauss
+void kernel_gaussian();
+int * kernelGauss( int * factor, int dim, float desv );
+
+/* Helpers */
+unsigned char * reserveMemory( uint32_t with, uint32_t height );
+void print_mat( int * numbers, int limit, int every );
+
+
+
 #endif
