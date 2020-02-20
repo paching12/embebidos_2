@@ -3,6 +3,7 @@
 
 #ifndef IMAGEN_H
 #define IMAGEN_H
+#define NUM_THREADS 3
 
 typedef struct bmpFileHeader
 {

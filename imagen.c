@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
+#include <pthread.h>
 #include "imagen.h"
 
 unsigned char *abrirBMP(char *filename, bmpInfoHeader *bInfoHeader)
@@ -189,6 +190,8 @@ void RGBToGray2( unsigned char * imageRGB, unsigned char * imageGray, uint32_t w
     imageGray[grayIndex] = grayLevel;
   } // end for
 }
+/*
+*/
 
 void gaussian_filter( unsigned char * xn, unsigned char * imageGray, uint32_t width, uint32_t height ) {
   
@@ -240,13 +243,9 @@ void gaussian_filter( unsigned char * xn, unsigned char * imageGray, uint32_t wi
   // print_mat( yn, height*width, width );
 } // end filtro
 
-// void kernel_gaussian() {
-//   int * kernel;
-//   int factor, dim = 5;
-//   float des = 1;
-//   kernel = kernelGauss( &factor, dim, des );
-//   print_mat( kernel, dim*dim, dim );
-// } // end gaussian_filter
+// void * gradient_filter(  ) {
+//   pthread_exit( nh );
+// } // end gradient filter
 
 int * kernelGauss( int * factor, int dim, float desv ) {
   int * kernelGauss;
@@ -273,7 +272,7 @@ int * kernelGauss( int * factor, int dim, float desv ) {
       if( !index )
         norm = coef;
       kernelGauss[ index ] = ( unsigned char )(coef/norm);
-      printf( "Coeficiente %d\n", kernelGauss[ index ]  );
+      // printf( "Coeficiente %d\n", kernelGauss[ index ]  );
       *factor += kernelGauss[ index++ ];  
     } // end for
     

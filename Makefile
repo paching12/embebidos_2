@@ -4,7 +4,7 @@
 PROYECTO=conversion
 DESTDIR=/usr/local/bin
 CFLAGS=-Wall
-LDFLAGS=-lm
+LDFLAGS=-lm -pthread
 CC=gcc
 OBJS := $(patsubst %.c,%.o,$(wildcard *.c))
 
