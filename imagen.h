@@ -29,6 +29,9 @@ typedef struct bmpInfoHeader
   uint32_t imxtcolors;      /* Colores importantes. 0 si son todos */
 } bmpInfoHeader;
 
+bmpInfoHeader info; // width and height image
+unsigned char *imageRGB, *imageGray, *blur;
+
 
 unsigned char *abrirBMP(char *filename, bmpInfoHeader *bInfoHeader);
 void guardarBMP(char *filename, bmpInfoHeader *info, unsigned char *imgdata);
@@ -46,10 +49,15 @@ void RGBToGray2( unsigned char * imageRGB, unsigned char * imageGray, uint32_t w
 // Brightness
 void imageBrightness( unsigned char * imageRGB, unsigned char * imageGray, uint32_t width, uint32_t height );
 
-// Filtro Gaussiano
+// Gaussian's filter
 void gaussian_filter( unsigned char * imageGray, unsigned char * blur, uint32_t width, uint32_t height );
 void umbralGlobal( unsigned char * imageGray, uint32_t width, uint32_t height );
 void umbralDinamico( unsigned char * imageGray, uint32_t width, uint32_t height );
+void * gaussian_parallel( void * );
+
+// Gradient's filter
+
+void gradient_filter( unsigned char * imageGray, unsigned char * blur, uint32_t width, uint32_t height );
 
 // Kernel Gauss
 void kernel_gaussian();
