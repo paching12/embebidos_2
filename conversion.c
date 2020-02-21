@@ -19,25 +19,31 @@ int main() {
 	register int nh;
 	int *hilo;
 
+ 
 
 
 	imageGray = reserveMemory( info.width, info.height );
 	blur 	  = reserveMemory( info.width, info.height );
 
+	for( register int i  = 0; i < info.height*info.width; i++ )
+		blur[ i ] = 0;
+
 	// Grayscale conversion
 	RGBToGray2( imageRGB, imageGray, info.width, info.height );
 
 	// Parallel gaussian filter
-	// for(nh = 0; nh < NUM_THREADS; nh++){
-	// 	nhs[nh] = nh;
-	// 	pthread_create(&tids[nh], NULL, gaussian_parallel, (void *) &nhs[nh]);
-	// }
-	// for(nh = 0; nh < NUM_THREADS; nh++){
-	// 	pthread_join(tids[nh], (void **)&hilo);
-	// 	printf("hilo %d ha terminado\n",*hilo);
-	// }
+	for(nh = 0; nh < NUM_THREADS; nh++){
+		nhs[nh] = nh;
+		pthread_create(&tids[nh], NULL, gradient_parallel, (void *) &nhs[nh]);
+	} // end for
 
-	gradient_filter( imageGray, blur, info.width, info.height );
+	for(nh = 0; nh < NUM_THREADS; nh++){
+		pthread_join(tids[nh], (void **)&hilo);
+		printf("hilo %d ha terminado\n",*hilo);
+	} // end for
+
+
+	// gradient_filter( imageGray, blur, info.width, info.height );
 	
 	GrayToRGB2( imageRGB, blur, info.width, info.height );
 

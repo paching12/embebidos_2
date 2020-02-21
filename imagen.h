@@ -3,7 +3,7 @@
 
 #ifndef IMAGEN_H
 #define IMAGEN_H
-#define NUM_THREADS 3
+#define NUM_THREADS 4
 
 typedef struct bmpFileHeader
 {
@@ -56,9 +56,8 @@ void umbralDinamico( unsigned char * imageGray, uint32_t width, uint32_t height 
 void * gaussian_parallel( void * );
 
 // Gradient's filter
-
 void gradient_filter( unsigned char * imageGray, unsigned char * blur, uint32_t width, uint32_t height );
-
+void * gradient_parallel( void * );
 // Kernel Gauss
 void kernel_gaussian();
 int * kernelGauss( int * factor, int dim, float desv );

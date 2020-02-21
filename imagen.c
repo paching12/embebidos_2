@@ -242,7 +242,7 @@ void gaussian_filter( unsigned char * xn, unsigned char * imageGray, uint32_t wi
 	} // end for
 } // end filtro
 
-void * gaussian_parallel( void *nh ) {
+void * gaussian_parallel( void * nh ) {
 
 	int width = info.width, height = info.height;
 
@@ -265,14 +265,15 @@ void * gaussian_parallel( void *nh ) {
 	for( register int x = 0; x < dim*dim; x++ )
 		totalHn += hn[x];
 
-	for( register int i  = 0; i < height*width; i++ ) {
-		blur[ i ] = 0;
-	}
- 
-		int shift    = dim >> 1;
-		int sum      = 0;
-		int subIndex = 0;
-		int middle   = 0;
+	int shift    = dim >> 1;
+	int sum      = 0;
+	int subIndex = 0;
+	int middle   = 0;
+
+	if( !core ) {
+		fin += 9;
+	} else
+		ini -= 9;
 
 	for ( y = ini; y <= fin-dim; y++ ) {
 		for ( x = 0; x <= (width-dim); x++ ) {
@@ -346,6 +347,71 @@ void gradient_filter( unsigned char * xn, unsigned char * imageGray, uint32_t wi
 		} // end for
 	} // end for
 
+} // end gradient filter
+
+
+
+void * gradient_parallel( void * nh ) {
+	
+
+	int width = info.width, height = info.height;
+
+	int core      = *(int *) nh;
+	int eleBloque = height / NUM_THREADS;
+	int ini       = core * eleBloque;
+	int fin       = eleBloque+ini;
+
+	register int x, y, xb, yb;
+	int dim = 3, indice;
+
+
+	int mat1[9] = { 1, 0, -1,
+									2, 0, -2,
+									1, 0, -1};
+
+ 	
+	int mat2[9] = { -1, -2, -1,
+									 0,  0,  0,
+									 1,  2,  1};
+
+	for( register int i  = 0; i < height*width; i++ )
+		blur[ i ] = 0;
+ 
+	int center   = 0;
+	int sum1 		 = 0; 
+	int sum2     = 0;
+	int subIndex1 = 0;
+	int subIndex2 = 0;
+
+	if( !core )
+		fin += 10;
+	else
+		ini -= 10;
+
+	for ( y = ini; y <= fin-dim; y++ ) {
+		for ( x = 0; x <= (width-dim); x++ ) {
+			sum1     = 0;
+			sum2     = 0;
+			subIndex1 = 0;
+			subIndex2 = 0;
+			for ( yb = 0; yb < dim; yb++ ) {
+				for ( xb = 0; xb < dim; xb++ ) {
+					indice   =  ((y+yb) * width) + (x+xb);
+					sum1    +=  mat1[ subIndex1++ ] * imageGray[ indice ];
+					sum2    +=  mat2[ subIndex2++ ] * imageGray[ indice ];
+				} // end for
+			} // end for
+
+			
+			center              = dim >> 1;
+			center              = (y+center) * width + (x+center);
+			sum1               /= 4;
+			sum2               /= 4;
+			blur[ center ] = sqrt( (sum1*sum1)+(sum2*sum2) );
+
+		} // end for
+	} // end for
+	pthread_exit( nh );
 } // end gradient filter
 
 int * kernelGauss( int * factor, int dim, float desv ) {
