@@ -34,7 +34,7 @@ int main() {
 	// Parallel gaussian filter
 	for(nh = 0; nh < NUM_THREADS; nh++){
 		nhs[nh] = nh;
-		pthread_create(&tids[nh], NULL, gradient_parallel, (void *) &nhs[nh]);
+		pthread_create(&tids[nh], NULL, gaussian_parallel, (void *) &nhs[nh]);
 	} // end for
 
 	for(nh = 0; nh < NUM_THREADS; nh++){

@@ -234,8 +234,7 @@ void gaussian_filter( unsigned char * xn, unsigned char * imageGray, uint32_t wi
 			
 			center   =  dim >> 1;
 			center   =  (y+center) * width + (x+center); 
-			sum     /= totalHn;
-			if( sum  )
+			sum /= totalHn;
 			imageGray[ center ] = sum;
 
 		} // end for
@@ -273,12 +272,11 @@ void * gaussian_parallel( void * nh ) {
 
 	if( !core ) {
 		fin += 9;
-	} 
-	else
+	} else
 		ini -= 9;
 
 	for ( y = ini; y <= fin-dim; y++ ) {
-		for ( x = 0; x <= width; x++ ) {
+		for ( x = 0; x <= (width-dim); x++ ) {
 			sum    = 0;
 			subIndex = 0;
 			for ( yb = 0; yb < dim; yb++ ) {
