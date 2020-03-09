@@ -4,28 +4,27 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include "imagen.h"
 
 #define PUERTO 			5000	//Número de puerto asignado al servidor
 #define COLA_CLIENTES 	5 		//Tamaño de la cola de espera para clientes
 #define TAM_BUFFER 		100
 
-
 int main(int argc, char **argv)
 {
-
 
 
    printf("Abriendo imagen...\n");
    imageRGB = abrirBMP( "calle1.bmp", &info );
    displayInfo( &info );
 
-   imageGray = reserveMemory( info.width, info.height );
+   // imageGray = reserveMemory( info.width, info.height );
 
-   RGBToGray2( imageRGB, imageGray, info.width, info.height );
-
-
+   // RGBToGray2( imageRGB, imageGray, info.width, info.height );
 
 
+
+   // free( imageGray );
 
    int sockfd, cliente_sockfd;
    struct sockaddr_in direccion_servidor; //Estructura de la familia AF_INET, que almacena direccion
@@ -81,8 +80,7 @@ int main(int argc, char **argv)
  *  accept - ES BLOQUEANTE 
  */
    	printf ("En espera de peticiones de conexión ...\n");
-   	if( (cliente_sockfd = accept(sockfd, NULL, NULL)) < 0 )
-	{
+   	if( (cliente_sockfd = accept(sockfd, NULL, NULL)) < 0 ) {
 		perror("Ocurrio algun problema al atender a un cliente");
 		exit(1);
    	}
@@ -90,19 +88,22 @@ int main(int argc, char **argv)
 /*
  *	Inicia la transferencia de datos entre cliente y servidor
  */
-   	printf("Se aceptó un cliente, atendiendolo \n");
-   	if( read (cliente_sockfd, &leer_mensaje, TAM_BUFFER) < 0 )
-	{
-		perror ("Ocurrio algun problema al recibir datos del cliente");
-		exit(1);
-   	}
-   	printf ("El cliente nos envio el siguiente mensaje: \n %s \n", leer_mensaje);
-   	if( write (cliente_sockfd, "Bienvenido cliente", 19) < 0 )
-	{
-		perror("Ocurrio un problema en el envio de un mensaje al cliente");
-		exit(1);
-   	}
-   	printf("Concluimos la ejecución de la aplicacion Servidor \n");
+
+      printf ("Enviando mensaje al cliente ...\n");
+      if( write( cliente_sockfd, &info, sizeof( bmpInfoHeader ) ) < 0 )
+      {
+         perror("Ocurrio un problema en el envio de un mensaje al cliente");
+         exit(1);
+      }
+
+
+   	// printf ("El cliente nos envio el siguiente mensaje: \n %s \n", leer_mensaje);
+   	
+    //   if( write (cliente_sockfd, "Bienvenido cliente", 19) < 0 ) {
+    //      perror("Ocurrio un problema en el envio de un mensaje al cliente");
+    //      exit(1);
+    //   }
+   	// printf("Concluimos la ejecución de la aplicacion Servidor \n");
 /*
  *	Cierre de las conexiones
  */
@@ -114,16 +115,16 @@ int main(int argc, char **argv)
 }
 
 
-void recibirImagen( int cfv, unsigned char * imageGray,  ) {
-   int bytesFaltantes = longitud, bytesRcv;
-   while( bytesFaltantes > 0 ) {
-      bytesRcv = read( sfd, imageGray, bytesFaltantes );
-      if(  bytesRcv < 0 ) {
-         perror( "Ocurrio algun problema al recibir datos del cliente" );
-         exit(EXIT_FAILURE);
-      } // end if
-      printf("Bytes recibidos: %d\n", bytesRcv );
-      bytesFaltantes = bytesFaltantes - bytesRcv;
-      imageGray      = imageGray + bytesRcv;
-   } // end while
-} // end recibirImagen 
+// void recibirImagen( int cfv, unsigned char * imageGray,  ) {
+//    int bytesFaltantes = longitud, bytesRcv;
+//    while( bytesFaltantes > 0 ) {
+//       bytesRcv = read( sfd, imageGray, bytesFaltantes );
+//       if(  bytesRcv < 0 ) {
+//          perror( "Ocurrio algun problema al recibir datos del cliente" );
+//          exit(EXIT_FAILURE);
+//       } // end if
+//       printf("Bytes recibidos: %d\n", bytesRcv );
+//       bytesFaltantes = bytesFaltantes - bytesRcv;
+//       imageGray      = imageGray + bytesRcv;
+//    } // end while
+// } // end recibirImagen 

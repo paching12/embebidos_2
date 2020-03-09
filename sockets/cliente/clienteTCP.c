@@ -57,22 +57,23 @@ int main(int argc, char **argv)
 /*
  *	Inicia la transferencia de datos entre cliente y servidor
  */
-	printf ("Enviando mensaje al servidor ...\n");
-	if( write(sockfd, "Soy el Cliente", 15) < 0 )
-	{
-		perror("Ocurrio un problema en el envio de un mensaje al cliente");
-		exit(1);
-	}
-
-	printf ("Recibiendo contestacion del servidor ...\n");
-	if (read (sockfd, &leer_mensaje, TAM_BUFFER) < 0)
-	{	
+	printf("Se aceptó un servidor, atendiendolo \n");
+	if( read ( sockfd, &info, sizeof( bmpInfoHeader ) ) < 0 ) {
 		perror ("Ocurrio algun problema al recibir datos del cliente");
 		exit(1);
 	}
+
+	displayInfo( &info );
+
+	// printf ("Recibiendo contestacion del servidor ...\n");
+	// if (read (sockfd, &leer_mensaje, TAM_BUFFER) < 0)
+	// {	
+	// 	perror ("Ocurrio algun problema al recibir datos del cliente");
+	// 	exit(1);
+	// }
 	
-	printf ("El servidor envio el siguiente mensaje: \n%s\n", leer_mensaje);
-	printf ("Cerrando la aplicacion cliente\n");
+	// printf ("El servidor envio el siguiente mensaje: \n%s\n", leer_mensaje);
+	// printf ("Cerrando la aplicacion cliente\n");
 /*
  *	Cierre de la conexion
  */
