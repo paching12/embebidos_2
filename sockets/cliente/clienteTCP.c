@@ -11,8 +11,12 @@
 #define TAM_BUFFER 100
 #define DIR_IP "127.0.0.1"
 
+
+void receive( unsigned char * img, bmpInfoHeader * info, int fd );
+
 int main(int argc, char **argv)
 {
+
 
 	int tamano_direccion, sockfd;
 	struct sockaddr_in direccion_servidor;
@@ -65,6 +69,20 @@ int main(int argc, char **argv)
 
 	displayInfo( &info );
 
+	unsigned char * img      = reserveMemory( info.width, info.height );
+	unsigned char * imageRGB = reserveMemory( info.width, info.height*3 );
+
+	for( register int i = 0; i < (info.width * info.height); i++ )
+		img[i] = 255;
+
+	receive( img, &info, sockfd );
+
+
+	GrayToRGB2( imageRGB, img, info.width, info.height );
+
+
+	guardarBMP( "blursito.bmp", &info, imageRGB );
+
 	// printf ("Recibiendo contestacion del servidor ...\n");
 	// if (read (sockfd, &leer_mensaje, TAM_BUFFER) < 0)
 	// {	
@@ -78,7 +96,32 @@ int main(int argc, char **argv)
  *	Cierre de la conexion
  */
 	close(sockfd);
-
+	free(img);
+	free(imageRGB);
 	return 0;
 }
 	
+void receive( unsigned char * img, bmpInfoHeader * info, int fd ) {
+
+	int size         = info->width*info->height;
+	int receiveBytes = 0;
+	int leftBytes    = size;
+	int chunk_size   = 1300;
+	int totalBytes   = 0;
+
+
+	while( (receiveBytes = read( fd, img, chunk_size )) > 0 ) {
+		if(  receiveBytes < 0 ) {
+			perror( "Ocurrio algun problema al recibir datos del cliente" );
+			exit(EXIT_FAILURE);
+      	} // end if
+
+      	totalBytes   += receiveBytes;
+      	printf("Bytes restantes: %d - recibidos:%d\n", leftBytes, receiveBytes);
+      	leftBytes     = leftBytes - receiveBytes;
+
+      	img           = img + receiveBytes;
+	}
+	printf("Bytes restantes: %d, Bytes procesados: %d\n", leftBytes, totalBytes );
+
+} // end receive

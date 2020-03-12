@@ -495,15 +495,15 @@ void umbralDinamico( unsigned char * imageGray, uint32_t width, uint32_t height 
 
 
 unsigned char * reserveMemory( uint32_t width, uint32_t height ) {
-	unsigned char *imagen;
-	imagen = (unsigned char *)malloc( width*height*sizeof(char) );
+	unsigned char *image;
+	image = (unsigned char *)malloc( width*height*sizeof(char) );
 
-	if( imagen == NULL ) {
+	if( image == NULL ) {
 		perror( "Error al asignar memoria" );
 		exit( EXIT_FAILURE );
 	}
 
-	return imagen;
+	return image;
 } // end reserveMemory
 
 

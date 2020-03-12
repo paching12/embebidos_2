@@ -10,21 +10,21 @@
 #define COLA_CLIENTES 	5 		//Tamaño de la cola de espera para clientes
 #define TAM_BUFFER 		100
 
+void sendChunks( bmpInfoHeader * info, int fd );
+
 int main(int argc, char **argv)
 {
 
 
+   printf( "PID: %d,", getpid() );
    printf("Abriendo imagen...\n");
    imageRGB = abrirBMP( "calle1.bmp", &info );
    displayInfo( &info );
 
-   // imageGray = reserveMemory( info.width, info.height );
+   imageGray = reserveMemory( info.width, info.height );
 
-   // RGBToGray2( imageRGB, imageGray, info.width, info.height );
+   RGBToGray2( imageRGB, imageGray, info.width, info.height );
 
-
-
-   // free( imageGray );
 
    int sockfd, cliente_sockfd;
    struct sockaddr_in direccion_servidor; //Estructura de la familia AF_INET, que almacena direccion
@@ -56,6 +56,7 @@ int main(int argc, char **argv)
    	printf("Configurando socket ...\n");
    	if( bind(sockfd, (struct sockaddr *) &direccion_servidor, sizeof(direccion_servidor)) < 0 )
 	{
+      printf("PID: %d\n", getpid());
 		perror ("Ocurrio un problema al configurar el socket");
 		exit(1);
    	}
@@ -96,24 +97,63 @@ int main(int argc, char **argv)
          exit(1);
       }
 
+   sendChunks( &info, cliente_sockfd );      
 
-   	// printf ("El cliente nos envio el siguiente mensaje: \n %s \n", leer_mensaje);
-   	
-    //   if( write (cliente_sockfd, "Bienvenido cliente", 19) < 0 ) {
-    //      perror("Ocurrio un problema en el envio de un mensaje al cliente");
-    //      exit(1);
-    //   }
-   	// printf("Concluimos la ejecución de la aplicacion Servidor \n");
+
 /*
  *	Cierre de las conexiones
  */
 
-   	close (sockfd);
-   	close (cliente_sockfd);
-
+   close (sockfd);
+   close (cliente_sockfd);
+   free( imageGray );
+   free( imageRGB );
 	return 0;
 }
 
+
+
+void sendChunks( bmpInfoHeader * info, int fd ) {
+   int all_size             = (info->width * info->height);
+   int actually_size     = 0;
+   int chunk_size        = 1500; // Max MTU size 1500 
+   int chunks            = all_size/chunk_size;
+   int iterator          = 0;
+   int writeBytes        = 0;
+
+   unsigned char * chunk = ( unsigned char *) malloc( sizeof( unsigned char *) * chunk_size );
+
+   if( chunk == NULL ) {
+      perror("Asignación de memoria incorrecta");
+      exit(EXIT_FAILURE);
+   } // END IF
+
+
+   for( register int i = 0; i < chunks; i++ ) {
+      // imageRGB[ i ]
+      int j = 0;
+      for( register l = 0; l < chunk_size; l++ )
+         chunk[l] = 0;
+
+      while( j < chunk_size && iterator < all_size ) {
+         chunk[j]        = imageGray[iterator];
+         iterator++;
+         j++;
+      } // end while
+      writeBytes = write( fd, chunk, j); 
+      if( writeBytes < 0 ) {
+         perror( "Ocurrio algun problema al escribir datos al cliente" );
+         exit(EXIT_FAILURE);
+      } // end if
+
+
+      actually_size += chunk_size;
+      printf( "Iterador %d - Actually: %d - Enviados: %d - Total:%d\n", iterator, actually_size, writeBytes, all_size );
+   } // end for
+
+
+
+}
 
 // void recibirImagen( int cfv, unsigned char * imageGray,  ) {
 //    int bytesFaltantes = longitud, bytesRcv;

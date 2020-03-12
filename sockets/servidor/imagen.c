@@ -21,11 +21,11 @@ unsigned char *abrirBMP(char *filename, bmpInfoHeader *bInfoHeader)
 	uint16_t type;        /* 2 bytes identificativos */
 
 		f = fopen (filename, "r");
-	if( f  == NULL )
-	{
-		perror("Error al abrir el archivo en lectura");
-		exit(EXIT_FAILURE);
-	}
+		if( f  == NULL )
+		{
+			perror("Error al abrir el archivo en lectura");
+			exit(EXIT_FAILURE);
+		}
 
 		/* Leemos los dos primeros bytes */
 		fread( &type, sizeof(uint16_t), 1, f );
