@@ -374,8 +374,8 @@ void * gradient_parallel( void * nh ) {
 									 0,  0,  0,
 									 1,  2,  1};
 
-	for( register int i  = 0; i < height*width; i++ )
-		blur[ i ] = 0;
+	//for( register int i  = 0; i < height*width; i++ )
+		//blur[ i ] = 0;
  
 	int center   = 0;
 	int sum1 		 = 0; 

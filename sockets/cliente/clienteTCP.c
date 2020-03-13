@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 #include "imagen.h"
 
 #define PUERTO 5000
@@ -68,20 +69,35 @@ int main(int argc, char **argv)
 	}
 
 	displayInfo( &info );
-
-	unsigned char * img      = reserveMemory( info.width, info.height );
-	unsigned char * imageRGB = reserveMemory( info.width, info.height*3 );
-
-	for( register int i = 0; i < (info.width * info.height); i++ )
-		img[i] = 255;
-
-	receive( img, &info, sockfd );
+	
+	pthread_t tids[NUM_THREADS];
+	int nhs[NUM_THREADS];
+	register int nh;
+	int *hilo;
 
 
-	GrayToRGB2( imageRGB, img, info.width, info.height );
+	blur      = reserveMemory( info.width, info.height );
+	imageGray = reserveMemory( info.width, info.height );
+	imageRGB  = reserveMemory( info.width, info.height*3 );
 
+	//for( register int i = 0; i < (info.width * info.height); i++ )
+		//blur[i] = 255;
 
-	guardarBMP( "blursito.bmp", &info, imageRGB );
+	receive( imageGray, &info, sockfd );
+
+	// Parallel gaussian filter
+	for(nh = 0; nh < NUM_THREADS; nh++){
+		nhs[nh] = nh;
+		pthread_create(&tids[nh], NULL, gradient_parallel, (void *) &nhs[nh]);
+	} // end for
+
+	for(nh = 0; nh < NUM_THREADS; nh++){
+		pthread_join(tids[nh], (void **)&hilo);
+		printf("hilo %d ha terminado\n",*hilo);
+	} // end for
+
+	GrayToRGB2( imageRGB, blur, info.width, info.height );
+	guardarBMP( "photo.bmp", &info, imageRGB );
 
 	// printf ("Recibiendo contestacion del servidor ...\n");
 	// if (read (sockfd, &leer_mensaje, TAM_BUFFER) < 0)
@@ -96,7 +112,8 @@ int main(int argc, char **argv)
  *	Cierre de la conexion
  */
 	close(sockfd);
-	free(img);
+	free(blur);
+	free(imageGray);
 	free(imageRGB);
 	return 0;
 }

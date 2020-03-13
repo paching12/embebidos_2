@@ -17,12 +17,22 @@ int main(int argc, char **argv)
 
 
    printf( "PID: %d,", getpid() );
+   
+   //system("raspistill -n -t 500 -e bmp -w 1200 -h 900 -o foto.bmp");
+   system("convert -depth 24 foto.bmp foto.bmp");
+   
+   sleep(1);
+   
    printf("Abriendo imagen...\n");
-   imageRGB = abrirBMP( "calle1.bmp", &info );
+   
+   imageRGB = abrirBMP( argv[1], &info );
    displayInfo( &info );
+   
 
    imageGray = reserveMemory( info.width, info.height );
 
+
+   //printf("width: %d | height: %d\n",info.width, info.height );
    RGBToGray2( imageRGB, imageGray, info.width, info.height );
 
 
@@ -132,7 +142,7 @@ void sendChunks( bmpInfoHeader * info, int fd ) {
    for( register int i = 0; i < chunks; i++ ) {
       // imageRGB[ i ]
       int j = 0;
-      for( register l = 0; l < chunk_size; l++ )
+      for( register int l = 0; l < chunk_size; l++ )
          chunk[l] = 0;
 
       while( j < chunk_size && iterator < all_size ) {
