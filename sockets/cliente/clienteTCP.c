@@ -10,7 +10,7 @@
 
 #define PUERTO 5000
 #define TAM_BUFFER 100
-#define DIR_IP "127.0.0.1"
+#define DIR_IP "10.100.71.187"
 
 
 void receive( unsigned char * img, bmpInfoHeader * info, int fd );
