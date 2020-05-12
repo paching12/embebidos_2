@@ -2,7 +2,8 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/kthread.h>
-
+#include <linux/delay.h>
+#include <linux/moduleparam.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("VICTOR H GARCIA O");
@@ -10,10 +11,22 @@ MODULE_DESCRIPTION("Módulo de kernel simple");
 MODULE_VERSION("1.0");
 MODULE_INFO(driver, "PULSO CARDIACO");
 
-struct task_struct * khilo;
+static int irq = 7;
+// MODULE_PARAM_DESC( irq, "Numero de interrupcion" );
 
+struct task_struct * khilo;
 int hilo_kernel( void* data ) {
     int id = *(int *)data;
+    register int contador = 0;
+    
+    while( !kthread_should_stop() ) {
+    	
+	if( irq == 10 ) {
+		printk( KERN_INFO "Ejecutando codigo hilo %d\n", contador );
+    		ssleep(1);
+		contador++;
+	} // end if
+    }
     return id;
 }
 
