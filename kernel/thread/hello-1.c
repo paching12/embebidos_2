@@ -4,10 +4,7 @@
 
 
 int init_module(void) {
-
     printk(KERN_ALERT "Hola mundo en el modulo 1.\n");
-
-
     return 0;
 }
 
