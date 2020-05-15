@@ -27,7 +27,11 @@ __used __section(__versions) = {
 	{ 0xd2f30559, "module_layout" },
 	{ 0x115507b2, "param_ops_int" },
 	{ 0x46c8fbe9, "param_array_ops" },
-	{ 0x2ea2c95c, "__x86_indirect_thunk_rax" },
+	{ 0x9e50e122, "kthread_stop" },
+	{ 0x7a0d3544, "wake_up_process" },
+	{ 0x71162e08, "kthread_create_on_node" },
+	{ 0xf9a482f9, "msleep" },
+	{ 0xb3f7646e, "kthread_should_stop" },
 	{ 0xc5850110, "printk" },
 	{ 0xbdfb6dbb, "__fentry__" },
 };
@@ -35,4 +39,4 @@ __used __section(__versions) = {
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "5AE5A1DDE3D00176EF1CFA4");
+MODULE_INFO(srcversion, "CB01AC5F3447A0BA9E5DE3F");
