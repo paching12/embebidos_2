@@ -1,1 +1,0 @@
-cmd_/home/nimda/Desktop/kernel/thread/thread.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000 --build-id  -T ./scripts/module-common.lds -o /home/nimda/Desktop/kernel/thread/thread.ko /home/nimda/Desktop/kernel/thread/thread.o /home/nimda/Desktop/kernel/thread/thread.mod.o;  true

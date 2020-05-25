@@ -1,7 +1,6 @@
  
 
-obj-m += thread.o
-obj-m += hello-2.o
+obj-m += param-1.o
 
 all:
 	make -C /lib/modules/*/build M=`pwd` modules
