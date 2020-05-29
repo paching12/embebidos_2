@@ -64,9 +64,10 @@ static void swap_numbers( int *ptrElement1, int * ptrElement2 ) {
 
 static void order(void) {
 
-	printk( KERN_INFO "Ordenamiento de números\n" );
+	register int i = 0;
+	register int j = 0;
 
-	register int i = 0, j = 0;
+	printk( KERN_INFO "Ordenamiento de números\n" );
 	
 		// Burble sort
 	for( i = 1; i < numberElements; i++ )
@@ -84,36 +85,28 @@ void (*f[2])(void) = { average_numbers, order };
 
 int get_param( char * buffer, const struct kernel_param * kp ) {
 
-	// char * cadena = (char *)(ops->arg);
 	int ret;
 
 	printk( KERN_INFO "funcion call back de lectura ejecutada" );
-	printk( KERN_INFO "buffer antes de la conversión: %s, arg = %d...", buffer, *(int *)kp->arg);
 
 	option = average_val;
 	ret = param_get_int( buffer, kp );
-	printk( KERN_INFO "Valor de retorno %d...\n", ret );
+	// printk( KERN_INFO "Valor de retorno %d...\n", ret );
 
 	if( !ret )
 		return -EPERM;
 
 
-	printk( KERN_INFO "buffer después de la conversión: %s...", buffer );
+	printk( KERN_INFO "Promedio: %d...", average_val );
 
 	return ret;
 }
 
 int set_param( const char * val, const struct kernel_param * kp ) {
 
-	int parametro = *(int *)kp->arg;
 	int ret = 0;
-	int lon = strlen(val);
-
 
 	printk( KERN_INFO "Writing Callback function \n" );
-	printk( KERN_INFO "Param: %d\n", parametro );
-	// printk( KERN_INFO "Parámetro val: %s\n", val);
-	// printk( KERN_INFO "Parámetro kp->arg: %s\n", parametro);
 	ret = param_set_int( val, kp );
 
 	if( ret ) {

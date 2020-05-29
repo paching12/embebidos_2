@@ -27,7 +27,7 @@ __used __section(__versions) = {
 	{ 0xd2f30559, "module_layout" },
 	{ 0x115507b2, "param_ops_int" },
 	{ 0x46c8fbe9, "param_array_ops" },
-	{ 0xb601be4c, "__x86_indirect_thunk_rdx" },
+	{ 0x2ea2c95c, "__x86_indirect_thunk_rax" },
 	{ 0xeaa2f186, "param_set_int" },
 	{ 0x74141eee, "param_get_int" },
 	{ 0xc5850110, "printk" },
@@ -37,4 +37,4 @@ __used __section(__versions) = {
 MODULE_INFO(depends, "");
 
 
-MODULE_INFO(srcversion, "A09FB7C5AE6FD1B3AB9AD83");
+MODULE_INFO(srcversion, "7222BCC5781820C1147C321");
