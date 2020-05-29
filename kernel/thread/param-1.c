@@ -6,7 +6,7 @@
 #define DESC "Módulo de kernel simple y muchas cosas..."
 #define AUTOR "José Pach ¡AJUA!"
 #define LIC "GPL"
-#define MAX 4
+#define MAX 6
 
 MODULE_LICENSE(AUTOR);
 MODULE_LICENSE(LIC);
@@ -15,10 +15,7 @@ MODULE_INFO(driver, "PULSO CARDIACO");
 MODULE_DESCRIPTION("Uso de parámetros");
 
 
-static int irq = 7;
-static char *comando = "derecha";
-// static int datos[MAX] = {1, 2, 3, 4};
-// static int numele = MAX;
+static char comando[MAX];
 
 // Para ver este valor en espacio de usuario - ls /sys/module/param_1/params
 // inicializar vars  sudo insmod param-1.ko irq=10
@@ -34,30 +31,46 @@ static char *comando = "derecha";
 // MODULE_PARM_DESC( comando, "Comando del módulo" );
 // MODULE_PARM_DESC( datos, "Muestras de pulso cárdiaco" );
 
-int get_param( char * val, const struct kernel_param * ops ) {
+int get_param( char * buffer, const struct kernel_param * ops ) {
 
-	printk( KERN_INFO "Reading Callback function\n" );
-	return 0;
+	int ret;
+	printk( KERN_INFO "Buffer antes de la conversión %s\n", buffer );
+	// Esta función convierte de entero a cadena.
+	// retorna la longitud del tamaño de la cadena convertida
+	ret = param_get_int( buffer, ops );
+
+	// printk( KERN_INFO "Reading Callback function\n" );
+	if( ret > 1 ) {
+		// printk( KERN_INFO "Buffer despues de conversión %s Parámetro IRQ: %d \n", buffer, irq );
+		return 0;
+	}
+
+	return -EPERM;
 }
 
 
 int set_param( const char * val, const struct kernel_param * kp ) {
 
-	int parametro = *(int *)kp->arg;
-	int ret;
+	char * parametro = (char *)kp->arg;
+	int ret = 0;
+	int lon = strlen(val);
 
 
 	printk( KERN_INFO "Writing Callback function\n" );
 	printk( KERN_INFO "Parámetro val: %s\n", val);
-	printk( KERN_INFO "Parámetro kp->arg: %d\n", parametro);
+	printk( KERN_INFO "Parámetro kp->arg: %s, comando: %s\n", parametro, comando);
 
 	// Con el mágico uso de helpers en moduleparam.h (Convertí de cadena a entero)
-	ret = param_set_int( val, kp );
+	if( lon > MAX ) {
+		printk( KERN_ERR "Parámetro (%s) muy largo \n", val );
+		return -ENOSPC;
+	}else if( lon == 1 ) {
+		printk( KERN_ERR "Falta Parámetro \n" );
+		return -EINVAL;
+	}
+	// else if(  )
 
-	if( !ret )
-		printk( KERN_INFO "Parámetro irq: %d \n", irq);
-
-
+	strcpy( comando, val );
 	return ret;
 }
 
@@ -67,12 +80,14 @@ const struct kernel_param_ops mis_param_ops =
 	.get = get_param,
 };
 
-module_param_cb( irq, &mis_param_ops, &irq, 0660 );
+module_param_cb( comando, &mis_param_ops, comando, 0660 );
+MODULE_PARM_DESC( comando, "Cadena parámetro" );
 
 static int __init function_start( void ) {
 
+	strcpy( comando, "atras");
 	printk( KERN_INFO "Iniciando el módulo con prámetros 1\n" );
-	printk( KERN_INFO "Interrupción: %d, Comando: %s\n", irq, comando );
+	printk( KERN_INFO "Comando: %s\n", comando );
 	
 
 	return 0;
@@ -82,9 +97,15 @@ static int __init function_start( void ) {
 static void __exit function_exit( void ) {
 	
 	printk( KERN_INFO "Terminando la ejecución con parámetros con funciones callback\n" );
-	printk( KERN_INFO "Interrupción: %d, Comando: %s\n", irq, comando );
+	printk( KERN_INFO "Comando: %s\n", comando );
+
 }
 
 
 module_init( function_start );
 module_exit( function_exit );
+
+/*
+Los Código de error se encuentran en la librería 
+<asm-generic/errno-base.h>
+*/
