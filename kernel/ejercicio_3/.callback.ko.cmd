@@ -1,0 +1,1 @@
+cmd_/home/nimda/Desktop/kernel/ejercicio_3/callback.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000 --build-id  -T ./scripts/module-common.lds -o /home/nimda/Desktop/kernel/ejercicio_3/callback.ko /home/nimda/Desktop/kernel/ejercicio_3/callback.o /home/nimda/Desktop/kernel/ejercicio_3/callback.mod.o;  true
