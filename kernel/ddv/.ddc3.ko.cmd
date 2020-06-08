@@ -1,0 +1,1 @@
+cmd_/home/nimda/Desktop/kernel/ddv/ddc3.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000 --build-id  -T ./scripts/module-common.lds -o /home/nimda/Desktop/kernel/ddv/ddc3.ko /home/nimda/Desktop/kernel/ddv/ddc3.o /home/nimda/Desktop/kernel/ddv/ddc3.mod.o;  true

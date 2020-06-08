@@ -1,0 +1,1 @@
+cmd_/home/nimda/Desktop/kernel/ejercicio_2/promedio_ordenamiento.mod := { echo  /home/nimda/Desktop/kernel/ejercicio_2/promedio_ordenamiento.o; echo; } > /home/nimda/Desktop/kernel/ejercicio_2/promedio_ordenamiento.mod

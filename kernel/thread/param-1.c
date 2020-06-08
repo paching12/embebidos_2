@@ -31,21 +31,22 @@ static char comando[MAX];
 // MODULE_PARM_DESC( comando, "Comando del módulo" );
 // MODULE_PARM_DESC( datos, "Muestras de pulso cárdiaco" );
 
+module_param_cb( comando, &mis_param_ops, comando, 0660 );
+// MODULE_PARM_DESC( comando, "Cadena parámetro" );
+
 int get_param( char * buffer, const struct kernel_param * ops ) {
 
+	char * cadena = (char *)(ops->arg);
+
 	int ret;
-	printk( KERN_INFO "Buffer antes de la conversión %s\n", buffer );
-	// Esta función convierte de entero a cadena.
-	// retorna la longitud del tamaño de la cadena convertida
-	ret = param_get_int( buffer, ops );
 
-	// printk( KERN_INFO "Reading Callback function\n" );
-	if( ret > 1 ) {
-		// printk( KERN_INFO "Buffer despues de conversión %s Parámetro IRQ: %d \n", buffer, irq );
-		return 0;
-	}
+	printk( KERN_INFO "funcion call back de lectura ejecutada" );
 
-	return -EPERM;
+	strcpy( buffer, cadena );
+	ret = strlen( buffer );
+	printk( KERN_INFO "Valor de retorno %s...\n", buffer );
+
+	return ret;
 }
 
 
@@ -80,8 +81,7 @@ const struct kernel_param_ops mis_param_ops =
 	.get = get_param,
 };
 
-module_param_cb( comando, &mis_param_ops, comando, 0660 );
-MODULE_PARM_DESC( comando, "Cadena parámetro" );
+
 
 static int __init function_start( void ) {
 
