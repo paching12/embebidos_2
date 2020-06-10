@@ -26,19 +26,19 @@ static int __init funcion_inicio(void){
 	}
 	printk(KERN_INFO "Ma: %d, Mi: %d\n", MAJOR(dispositivo), MINOR(dispositivo));
 	dev_class = class_create(THIS_MODULE, "ESCUM_class");
-	if(dev_class == NULL){
+	if( IS_ERR(dev_class) ){
 		printk(KERN_ERR "Error al crear la clase de dispositivo\n");
-		return -ENOMEM;
+		return PTR_ERR(dev_class);
 	}
 
 	printk(KERN_INFO "Clase de dispositivo OK\n");
 	dev_file = device_create(dev_class, NULL, dispositivo, NULL, "ESCUM_device");
 
-	if (dev_file ==NULL){
+	if ( IS_ERR(dev_file) ){
 		printk(KERN_ERR "ERror al crear archivo de dispositivo\n");
 		unregister_chrdev_region(dispositivo, 1);
 		class_destroy(dev_class);
-		return -ENOMEM;
+		return PTR_ERR( dev_file );
 	}
 
 	printk(KERN_INFO "Todo OK\n");
