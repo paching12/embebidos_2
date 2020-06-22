@@ -27,13 +27,12 @@ static struct class * dev_class;
 static struct device *dev_file;
 static struct cdev dev_cdev;
 
-static short int * buffer;
+static char * buffer;
 
 static int     driver_open     ( struct inode *inode, struct file *file );
 static int     driver_release  ( struct inode *inode, struct file *file );
 static ssize_t driver_read     ( struct file *filp, char __user * buf, size_t len, loff_t * off);
 static ssize_t driver_write    ( struct file *filp, const char * buf, size_t len, loff_t * off);
-static void procesamiento(void);
 
 static struct file_operations fops = 
 {
@@ -47,7 +46,7 @@ static struct file_operations fops =
 int driver_open ( struct inode * inode, struct file * file ) {
 	printk( KERN_INFO "Llamada a la operacion open del DOC\n" );
 	
-	buffer = kmalloc( sizeof(short int)*MAX_SIZE, GFP_KERNEL );
+	buffer = kmalloc( MAX_SIZE, GFP_KERNEL );
 	
 	if( buffer == NULL ) {
 		printk( KERN_ERR " Error al asignar buffer kmalloc \n" );
@@ -65,49 +64,33 @@ static int driver_release( struct inode *inode, struct file *file ) {
 }
 
 static ssize_t driver_read( struct file *filp, char __user * buf, size_t len, loff_t * off) {
-	int ret;
+	int ret, lon;
 	printk( KERN_INFO " Llamada a la operacion read del DOC \n" );
+	ret = copy_to_user( buf, buffer, MAX_SIZE );
 	
-	if( *off == 0 && len > 0 ) {
-		ret = copy_to_user( buf, buffer, len );
-		if( ret ) {
-			return -EFAULT;
-		}
+	strcpy( buffer, "Hola!!!!!" );	
+	printk( KERN_INFO " read: %s \n", buffer );
+	lon = strlen(buffer);
 
-		(*off) += len;
-
-		return len;	
+	if( ret  ) {
+		return -EFAULT;
 	}
 
-	return 0;
+	return lon;
+
 }
 
 static ssize_t driver_write( struct file *filp, const char * buf, size_t len, loff_t * off) {
 	int ret;
-	register int i;
 	printk(KERN_INFO "LLamada a la funcion write del driver!!\n");
 	
 
 	ret = copy_from_user( buffer, buf, len );
-	
 	if( ret ) {
 		return -EFAULT; // bad address
 	}
-	
-	for( i = 0; i < MAX_SIZE; i++ )
-		printk( KERN_INFO "Muestra %d : %d \n", i, buffer[i] );
-	
-	procesamiento();
-	
+	printk( KERN_INFO "Dato recibido %s \n", buffer );
 	return len;
-}
-
-void procesamiento ( void ) {
-	register int i; 
-
-	for( i = 0; i < MAX_SIZE; i++ )
-		buffer[i] = buffer[i] << 1; // buffer[i] *= 2; 
-
 }
 
 // buffer = kMALLOC( MEM_SIZE, GFP_KERNEL )

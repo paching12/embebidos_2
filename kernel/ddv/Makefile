@@ -1,6 +1,6 @@
   
 
-obj-m += ddc3.o
+obj-m += ddc5.o
 
 all:
 	make -C /lib/modules/*/build M=`pwd` modules
