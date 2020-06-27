@@ -30,7 +30,7 @@ int main()
 
 	sleep( 5 );
 
-	read( fd, buffer_read, N );
+	read( fd, buffer_read, sizeof(short int)*N );
 	printf("Mensaje recibido el DDC: %s\n", buffer_read );
 
 	sleep( 5 );
