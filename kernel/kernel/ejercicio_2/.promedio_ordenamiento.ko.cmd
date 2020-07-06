@@ -1,0 +1,1 @@
+cmd_/home/nimda/Desktop/kernel/ejercicio_2/promedio_ordenamiento.ko := ld -r -m elf_x86_64  -z max-page-size=0x200000 --build-id  -T ./scripts/module-common.lds -o /home/nimda/Desktop/kernel/ejercicio_2/promedio_ordenamiento.ko /home/nimda/Desktop/kernel/ejercicio_2/promedio_ordenamiento.o /home/nimda/Desktop/kernel/ejercicio_2/promedio_ordenamiento.mod.o;  true
