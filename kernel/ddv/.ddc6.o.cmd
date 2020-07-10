@@ -877,6 +877,10 @@ deps_/home/nimda/Desktop/kernel/ddv/ddc6.o := \
   arch/x86/include/asm/smap.h \
   arch/x86/include/asm/extable.h \
   arch/x86/include/asm/uaccess_64.h \
+  include/linux/kthread.h \
+  include/linux/delay.h \
+  arch/x86/include/asm/delay.h \
+  include/asm-generic/delay.h \
 
 /home/nimda/Desktop/kernel/ddv/ddc6.o: $(deps_/home/nimda/Desktop/kernel/ddv/ddc6.o)
 

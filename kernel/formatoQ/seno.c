@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define MUESTRAS 1024
+#define MUESTRAS 4096
 
 void generar_seno (short int seno[] );
 
@@ -20,7 +20,15 @@ void hamming( short int []);
 void procesamiento( short int * seno, short int * ventana, short int * seno_proc );
 
 int main() {
+	int fd, len;
 	short int seno[MUESTRAS], seno_proc[MUESTRAS], ventana[MUESTRAS];
+
+	fd = open( "/dev/ESCUM_device", O_RDWR );
+	if( fd == -1 )
+	{
+		perror("Error al abrir el DDC \n");
+		exit( EXIT_FAILURE );
+  	}
 
 	generar_seno( seno );
 	guarda_datos_int( seno, "seno.dat" );
@@ -28,9 +36,26 @@ int main() {
 	hamming( ventana );
 	guarda_datos_int( ventana, "ventana.dat" );
 
-	procesamiento( seno, ventana, seno_proc );
+	len = write( fd, seno, sizeof(short int) * MUESTRAS );
+	printf("Muestras enviadas: %d \n", len);
+
+	sleep(1);
+	
+	len = write( fd, ventana, sizeof(short int) * MUESTRAS );
+	printf("Muestras enviadas: %d \n", len);
+
+	sleep(1);
+
+	len = read( fd, seno_proc, sizeof(short int) * MUESTRAS );
+	printf("Muestras recibidas: %d \n", len);
+
+	// for( len = 0; len < MUESTRAS; len++ )
+	// 	printf("%d \n", seno_proc[len] );
+
+	// procesamiento( seno, ventana, seno_proc );
 	guarda_datos_int( seno_proc, "convolucion.dat" );
 
+	close( fd );
 
 	return 0;
 }
@@ -48,7 +73,7 @@ void procesamiento( short int * seno, short int * ventana, short int * seno_proc
 }
 
 void generar_seno( short int seno[] ) {
-	float f = 1000, fs = 45000, muestra;
+	float f = 1.3, fs = 512, muestra;
 	register int n;
 	for( n = 0; n < MUESTRAS; n++ ) { 
 		muestra = sinf(2*n*M_PI*f/fs);
